@@ -343,11 +343,15 @@ function load(){
   reloadBtn.classList.add('spin');
   if(inGAS){google.script.run.withSuccessHandler(done).withFailureHandler(e=>fail('讀取失敗：'+(e.message||e))).getData();return;}
   if(!API_URL){setTimeout(()=>done(SAMPLE),250);return;}
+  // 秘密連結：網址 #k=存取碼，打開即自動登入；網址保留存取碼，加到主畫面時一併帶上
+  const m=location.hash.match(/^#k=(.+)$/);
+  if(m){try{store.set('pnl-key',decodeURIComponent(m[1]).trim());}catch(_){}}
   const key=store.get('pnl-key');
   if(!key){lockScreen();return;}
+  if(!m){try{history.replaceState(null,'',location.pathname+'#k='+encodeURIComponent(key));}catch(_){}}
   if(!DATA){const c=store.get('pnl-cache');if(c){try{done(JSON.parse(c));reloadBtn.classList.add('spin');}catch(_){}}}
   fetch(API_URL+'?key='+encodeURIComponent(key),{cache:'no-store'}).then(r=>r.json()).then(d=>{
-    if(d.error==='unauthorized'){store.del('pnl-key');store.del('pnl-cache');DATA=null;lockScreen('存取碼不正確');return;}
+    if(d.error==='unauthorized'){store.del('pnl-key');store.del('pnl-cache');DATA=null;try{history.replaceState(null,'',location.pathname);}catch(_){}lockScreen('存取碼不正確，或連結已失效');return;}
     if(d.error){fail('讀取失敗：'+d.error);return;}
     store.set('pnl-cache',JSON.stringify(d));done(d);
   }).catch(()=>fail('連線失敗，請檢查網絡後按「更新」。'));

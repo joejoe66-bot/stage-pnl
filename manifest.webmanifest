@@ -2,7 +2,6 @@
   "name": "舞台劇損益",
   "short_name": "劇目損益",
   "description": "舞台劇每齣劇的預算、實際花費及細項",
-  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f2f3f7",
