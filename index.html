@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#141829" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#eceef4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#080a14" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="劇目損益">
@@ -19,139 +19,198 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Manrope:wght@500;600;700;800&display=swap">
 <style>
-/* Layout: 固定外框（頂欄＋劇目切換列）＋ 內容區切換動畫。總覽：深色淨額卡 → 需要留意 → 劇目卡；劇目：深色卡 → 花費明細(可展開細項) → 收入 → 試算 */
+/* Layout: 流動光暈背景 + 玻璃頂欄 + 彈簧指示器分段切換；總覽＝留意清單＋劇目卡；劇目＝Bento 便當格（損益算式／售票率圓環／成本結構／試算／花費明細／收入） */
 :root{
-  --bg:#f2f3f7; --surface:#ffffff; --sunk:#f6f7fa; --ink:#121628; --muted:#687089; --line:#e2e5ee;
-  --hero1:#141b3a; --hero2:#0f2a3d; --hero-ink:#f4f1e8; --hero-muted:#aab3cc; --gold:#e3b75c;
-  --accent:#141b3a; --chip-on:#141b3a; --chip-on-ink:#ffffff;
-  --good:#15845a; --good-soft:#e1f3ea; --bad:#d63a2f; --bad-soft:#fde8e6; --warn:#b06f00; --warn-soft:#fbf0d8;
-  --c1:#e3b75c; --c2:#3f7df0; --c3:#19a7a1; --c4:#e46a86; --c5:#8b68d6; --c6:#7c8aa8; --c7:#9cb53b;
-  --shadow:0 1px 2px rgba(18,22,40,.04),0 8px 24px rgba(18,22,40,.06);
+  --bg:#eceef4; --ink:#10142a; --muted:#646b85; --line:rgba(16,20,42,.08);
+  --glass:rgba(255,255,255,.62); --glass-strong:rgba(255,255,255,.82); --glass-edge:rgba(255,255,255,.85); --glass-shadow:0 1px 1px rgba(16,20,42,.04),0 12px 32px -8px rgba(16,20,42,.14);
+  --sunk:rgba(16,20,42,.045);
+  --blob1:#f6c76b; --blob2:#62d6c8; --blob3:#ff9e8f; --blob4:#a7b7ff;
+  --on:#10142a; --on-ink:#ffffff; --glow:rgba(255,255,255,.9);
+  --good:#128556; --good-soft:rgba(18,133,86,.12); --bad:#d5362b; --bad-soft:rgba(213,54,43,.11); --warn:#a96a00; --warn-soft:rgba(169,106,0,.12);
+  --c1:#e3a93a; --c2:#3f7df0; --c3:#16a59f; --c4:#e2587b; --c5:#8a63d6; --c6:#7685a6; --c7:#93ad2f;
+  --spring:linear(0,.009,.035 2.1%,.141,.281 6.7%,.723 12.9%,.938 16.7%,1.017,1.077 20.4%,1.121,1.149 24.3%,1.159,1.163,1.161,1.154 29.9%,1.129 32.8%,1.051 39.6%,1.017 43.1%,.991,.977 51%,.974 53.8%,.975 57.1%,.997 69.8%,1.003 76.9%,1.004 83.8%,1);
+  --ease:cubic-bezier(.2,.8,.2,1);
   --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
   --f-num:"Manrope","Noto Sans TC",system-ui,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0b0e1a; --surface:#141829; --sunk:#10142a; --ink:#eceef6; --muted:#98a0bd; --line:#252a44;
-  --hero1:#1a2350; --hero2:#0e3346; --hero-ink:#f4f1e8; --hero-muted:#aab3cc;
-  --accent:#e3b75c; --chip-on:#e3b75c; --chip-on-ink:#0b0e1a;
-  --good:#4fd09a; --good-soft:#123425; --bad:#ff7a70; --bad-soft:#3b1b19; --warn:#f2bf57; --warn-soft:#382c12;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}}
+  --bg:#080a14; --ink:#eef0f8; --muted:#9aa2bf; --line:rgba(255,255,255,.08);
+  --glass:rgba(24,28,50,.55); --glass-strong:rgba(28,32,56,.8); --glass-edge:rgba(255,255,255,.1); --glass-shadow:0 1px 1px rgba(0,0,0,.3),0 16px 40px -10px rgba(0,0,0,.6);
+  --sunk:rgba(255,255,255,.05);
+  --blob1:#7a5a1e; --blob2:#11635c; --blob3:#6e2c3a; --blob4:#2c3a8a;
+  --on:#f1c766; --on-ink:#0b0d18; --glow:rgba(241,199,102,.25);
+  --good:#52d39c; --good-soft:rgba(82,211,156,.14); --bad:#ff7b70; --bad-soft:rgba(255,123,112,.14); --warn:#f3c05a; --warn-soft:rgba(243,192,90,.14);
+  --c1:#f1c766; --c2:#7aa2ff; --c3:#3fd0c8; --c4:#ff86a3; --c5:#b896f2; --c6:#9aa8c8; --c7:#c2d65c; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0b0e1a; --surface:#141829; --sunk:#10142a; --ink:#eceef6; --muted:#98a0bd; --line:#252a44;
-  --hero1:#1a2350; --hero2:#0e3346; --hero-ink:#f4f1e8; --hero-muted:#aab3cc;
-  --accent:#e3b75c; --chip-on:#e3b75c; --chip-on-ink:#0b0e1a;
-  --good:#4fd09a; --good-soft:#123425; --bad:#ff7a70; --bad-soft:#3b1b19; --warn:#f2bf57; --warn-soft:#382c12;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}
+  --bg:#080a14; --ink:#eef0f8; --muted:#9aa2bf; --line:rgba(255,255,255,.08);
+  --glass:rgba(24,28,50,.55); --glass-strong:rgba(28,32,56,.8); --glass-edge:rgba(255,255,255,.1); --glass-shadow:0 1px 1px rgba(0,0,0,.3),0 16px 40px -10px rgba(0,0,0,.6);
+  --sunk:rgba(255,255,255,.05);
+  --blob1:#7a5a1e; --blob2:#11635c; --blob3:#6e2c3a; --blob4:#2c3a8a;
+  --on:#f1c766; --on-ink:#0b0d18; --glow:rgba(241,199,102,.25);
+  --good:#52d39c; --good-soft:rgba(82,211,156,.14); --bad:#ff7b70; --bad-soft:rgba(255,123,112,.14); --warn:#f3c05a; --warn-soft:rgba(243,192,90,.14);
+  --c1:#f1c766; --c2:#7aa2ff; --c3:#3fd0c8; --c4:#ff86a3; --c5:#b896f2; --c6:#9aa8c8; --c7:#c2d65c; color-scheme:dark}
 *{box-sizing:border-box}
 html,body{background:var(--bg);color:var(--ink)}
-body{font-family:var(--f-body);font-size:15px;line-height:1.55;margin:0;-webkit-font-smoothing:antialiased}
+body{font-family:var(--f-body);font-size:15px;line-height:1.55;margin:0;-webkit-font-smoothing:antialiased;min-height:100vh}
 button{font:inherit;color:inherit;cursor:pointer}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
-.n{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-feature-settings:"tnum";letter-spacing:-.01em}
-.cur{opacity:.55;font-weight:600;margin-right:1px}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:10px}
+.n{font-family:var(--f-num);font-variant-numeric:tabular-nums;font-feature-settings:"tnum";letter-spacing:-.02em}
+.cur{opacity:.45;font-weight:600;margin-right:.04em}
 .pos{color:var(--good)} .neg{color:var(--bad)} .na{color:var(--muted)}
-
-/* ---------- 固定外框 ---------- */
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
-.shell{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.in{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.top{display:flex;align-items:center;gap:12px;padding-block:12px 8px}
-.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--hero1),var(--hero2));color:var(--gold);display:grid;place-items:center;font-weight:900;flex:none}
-.ttl{min-width:0}
-.ttl b{display:block;font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ttl span{display:block;font-size:12px;color:var(--muted)}
-.sp{flex:1}
-.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;height:34px;padding:0 12px;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;flex:none}
-.btn:hover{border-color:var(--ink)}
-.btn svg{width:15px;height:15px}
-.btn.spin svg{animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.chips{display:flex;gap:8px;overflow-x:auto;padding-block:4px 12px;scrollbar-width:none}
-.chips::-webkit-scrollbar{display:none}
-.chip{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:500;display:inline-flex;align-items:center;gap:8px;transition:background .2s,color .2s,border-color .2s}
-.chip:hover{border-color:var(--ink)}
-.chip[aria-current="true"]{background:var(--chip-on);color:var(--chip-on-ink);border-color:var(--chip-on)}
-.chip .dot{width:7px;height:7px;border-radius:50%}
-
-/* ---------- 內容區 ---------- */
-main{padding-block:22px 72px}
-.view{display:grid;gap:22px}
-.view.enter > *{animation:enter .45s cubic-bezier(.2,.7,.2,1) both}
-.view.enter > :nth-child(2){animation-delay:.06s} .view.enter > :nth-child(3){animation-delay:.12s}
-.view.enter > :nth-child(4){animation-delay:.18s} .view.enter > :nth-child(5){animation-delay:.24s}
-.view.enter .play{animation:enter .45s cubic-bezier(.2,.7,.2,1) both}
-.view.enter .play:nth-child(2){animation-delay:.2s} .view.enter .play:nth-child(3){animation-delay:.26s} .view.enter .play:nth-child(n+4){animation-delay:.32s}
-@keyframes enter{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-.view.enter .b-act,.view.enter .b-bud{animation:grow .8s .25s cubic-bezier(.2,.7,.2,1) both}
-@keyframes grow{from{width:0}}
-.view.enter .donut-wrap svg{animation:pop .7s .15s cubic-bezier(.2,.8,.2,1.1) both}
-@keyframes pop{from{opacity:0;transform:rotate(-60deg) scale(.85)}to{opacity:1;transform:none}}
-.demo{background:var(--warn-soft);border-radius:12px;padding:10px 14px;font-size:13px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
-h2{font-size:17px;font-weight:700;margin:0}
-.head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.lbl{font-size:12px;color:var(--muted);font-weight:500;letter-spacing:.02em}
 .hint{font-size:13px;color:var(--muted)}
-.lbl{font-size:12px;color:var(--muted);font-weight:500}
 
-/* ---------- 深色主卡 ---------- */
-.hero{position:relative;overflow:hidden;border-radius:22px;padding:24px;color:var(--hero-ink);background:linear-gradient(135deg,var(--hero1),var(--hero2));display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center}
-.hero::after{content:"";position:absolute;right:-80px;top:-120px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(227,183,92,.22),transparent 65%);pointer-events:none}
-.hero .lbl{color:var(--hero-muted)}
-.h-main{display:grid;gap:6px;min-width:0;position:relative;z-index:1}
-.h-big{font-size:clamp(34px,6vw,52px);font-weight:800;line-height:1.05}
-.h-tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px;justify-self:start}
-.h-tag.up{background:rgba(79,208,154,.18);color:#7fe3b6} .h-tag.down{background:rgba(255,122,112,.18);color:#ff9d95} .h-tag.flat{background:rgba(255,255,255,.12);color:var(--hero-ink)}
-.h-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px;padding-top:16px;border-top:1px solid rgba(255,255,255,.12)}
-.h-stats .v{font-size:19px;font-weight:700}
-.donut-wrap{position:relative;z-index:1;display:grid;place-items:center}
-.donut-c{position:absolute;text-align:center;display:grid}
-.donut-c b{font-size:16px;font-weight:800}
-.donut-c span{font-size:11px;color:var(--hero-muted)}
-@media (max-width:700px){.hero{grid-template-columns:1fr}.donut-wrap{justify-self:start}.h-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* ---------- 流動光暈背景 ---------- */
+.mesh{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.mesh i{position:absolute;width:55vmax;height:55vmax;border-radius:50%;filter:blur(80px);opacity:.55}
+.mesh i:nth-child(1){background:var(--blob1);top:-20vmax;left:-15vmax;animation:drift1 26s ease-in-out infinite alternate}
+.mesh i:nth-child(2){background:var(--blob2);top:-10vmax;right:-20vmax;animation:drift2 30s ease-in-out infinite alternate}
+.mesh i:nth-child(3){background:var(--blob3);bottom:-25vmax;left:10vmax;animation:drift3 34s ease-in-out infinite alternate;opacity:.4}
+.mesh i:nth-child(4){background:var(--blob4);bottom:-20vmax;right:-10vmax;animation:drift1 28s ease-in-out infinite alternate-reverse;opacity:.45}
+@keyframes drift1{to{transform:translate(12vmax,8vmax) scale(1.1)}}
+@keyframes drift2{to{transform:translate(-10vmax,12vmax) scale(.9)}}
+@keyframes drift3{to{transform:translate(8vmax,-10vmax) scale(1.15)}}
+.app{position:relative;z-index:1}
 
-/* ---------- 需要留意 ---------- */
-.alerts{display:grid;gap:8px}
-.alert{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);text-align:left;width:100%}
-.alert:hover{border-color:var(--ink)}
-.a-ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-weight:800;font-size:14px}
-.a-ic.bad{background:var(--bad-soft);color:var(--bad)} .a-ic.warn{background:var(--warn-soft);color:var(--warn)}
-.a-t{font-size:14px;font-weight:600}
-.a-s{font-size:12px;color:var(--muted)}
-.ok{padding:14px;border-radius:12px;background:var(--good-soft);color:var(--good);font-size:14px;font-weight:500}
+/* ---------- 玻璃元件 ---------- */
+.glass{background:var(--glass);-webkit-backdrop-filter:blur(22px) saturate(1.6);backdrop-filter:blur(22px) saturate(1.6);border:1px solid var(--glass-edge);box-shadow:var(--glass-shadow)}
+.tile{position:relative;border-radius:24px;padding:20px;overflow:hidden;isolation:isolate}
+/* 跟隨游標的光暈 */
+.lit::before{content:"";position:absolute;inset:0;z-index:-1;opacity:0;transition:opacity .3s;background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),var(--glow),transparent 60%)}
+.lit:hover::before{opacity:1}
 
-/* ---------- 劇目卡 ---------- */
-.plays{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
-.play{border:1px solid var(--line);background:var(--surface);border-radius:18px;box-shadow:var(--shadow);padding:18px;display:grid;gap:16px;text-align:left;width:100%;transition:transform .18s,border-color .18s,box-shadow .18s}
-.play:hover{transform:translateY(-3px);border-color:var(--ink)}
-.p-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.p-name{font-size:19px;font-weight:700;line-height:1.3;text-wrap:balance}
-.p-meta{font-size:12px;color:var(--muted);margin-top:2px}
-.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap}
+/* ---------- 頂欄 ---------- */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--glass-strong)}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;padding-top:10px}
+.in{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.bar-in{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 10px;border-radius:20px}
+.logo{width:36px;height:36px;border-radius:11px;background:linear-gradient(140deg,#1a2350,#0e3346);color:#f1c766;display:grid;place-items:center;font-weight:900;flex:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.15)}
+.ttl{min-width:0;flex:1}
+.ttl b{display:block;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ttl span{display:block;font-size:12px;color:var(--muted)}
+.ibtn{border:1px solid var(--line);background:var(--sunk);border-radius:12px;height:36px;padding:0 12px;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;transition:transform .5s var(--spring),background .2s;flex:none}
+.ibtn:hover{background:var(--glass-strong)}
+.ibtn:active{transform:scale(.92)}
+.ibtn svg{width:15px;height:15px}
+.ibtn.spin svg{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* 分段切換＋彈簧指示器 */
+.seg-wrap{margin-top:10px;overflow-x:auto;scrollbar-width:none;border-radius:16px}
+.seg-wrap::-webkit-scrollbar{display:none}
+.seg{position:relative;display:inline-flex;gap:2px;padding:4px;border-radius:16px;min-width:max-content}
+.seg-ind{position:absolute;top:4px;bottom:4px;left:0;width:0;border-radius:12px;background:var(--on);box-shadow:0 4px 14px -4px rgba(16,20,42,.35);transition:transform .6s var(--spring),width .6s var(--spring);z-index:0}
+.seg button{position:relative;z-index:1;border:0;background:none;padding:7px 14px;border-radius:12px;font-size:14px;font-weight:600;color:var(--muted);display:inline-flex;align-items:center;gap:7px;transition:color .25s;white-space:nowrap}
+.seg button:hover{color:var(--ink)}
+.seg button[aria-current="true"]{color:var(--on-ink)}
+.seg .dot{width:7px;height:7px;border-radius:50%}
+
+/* ---------- 內容 ---------- */
+main{padding-block:20px 80px}
+.view{display:grid;gap:20px}
+.sec{display:grid;gap:12px}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-inline:4px}
+h2{font-size:18px;font-weight:800;margin:0;letter-spacing:.01em}
+.demo{border-radius:16px;padding:10px 14px;font-size:13px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap}
 .pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 .r-low{background:var(--good-soft);color:var(--good)} .r-mid{background:var(--warn-soft);color:var(--warn)} .r-high{background:var(--bad-soft);color:var(--bad)}
-.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.duo .v{font-size:22px;font-weight:800;line-height:1.2}
-.p-foot{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+
+/* 留意清單 */
+.alerts{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.alert{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;padding:14px 16px;border-radius:18px;transition:transform .5s var(--spring)}
+.alert:active{transform:scale(.97)}
+.alert:focus-visible{outline:2px solid var(--ink)}
+.a-ic{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-weight:800}
+.a-ic.bad{background:var(--bad-soft);color:var(--bad)} .a-ic.warn{background:var(--warn-soft);color:var(--warn)}
+.a-t{font-size:14px;font-weight:700;line-height:1.35}
+.a-s{font-size:12px;color:var(--muted)}
+.ok{padding:14px 16px;border-radius:18px;color:var(--good);font-weight:600;font-size:14px}
+
+/* 劇目卡 */
+.plays{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.play{all:unset;box-sizing:border-box;cursor:pointer;display:grid;gap:18px;padding:20px;border-radius:26px;transition:transform .6s var(--spring),box-shadow .3s}
+.play:hover{transform:translateY(-4px)}
+.play:active{transform:scale(.97)}
+.play:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.p-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.p-no{font-size:11px;color:var(--muted);letter-spacing:.12em}
+.p-name{font-size:22px;font-weight:900;line-height:1.25;text-wrap:balance;margin-top:2px}
+.p-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.p-mid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center}
+.p-big{font-size:30px;font-weight:800;line-height:1.1}
+.p-sub{font-size:12px;color:var(--muted);margin-top:4px}
+.p-ring{position:relative;width:72px;height:72px;display:grid;place-items:center}
+.p-ring svg{position:absolute;inset:0}
+.p-ring b{font-size:14px;font-weight:800}
+.p-ring small{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted);white-space:nowrap}
+.p-bar{display:grid;gap:6px}
+.p-bar-h{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.track{position:relative;height:8px;border-radius:4px;background:var(--sunk);overflow:hidden}
+.track .fill{position:absolute;inset:0 auto 0 0;border-radius:4px;background:var(--good);transform-origin:left}
+.track .fill.over{background:var(--bad)}
+.track .mark{position:absolute;top:0;bottom:0;width:2px;background:var(--ink);opacity:.5}
+.p-foot{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted);padding-top:12px;border-top:1px solid var(--line)}
 .p-foot b{color:var(--ink)}
-.go{font-weight:700;color:var(--ink);display:inline-flex;align-items:center;gap:4px}
+.go{display:inline-flex;align-items:center;gap:4px;font-weight:700;color:var(--ink)}
+.go svg{transition:transform .5s var(--spring)}
+.play:hover .go svg{transform:translateX(4px)}
 
-/* 子彈圖 */
-.bl{display:grid;gap:6px}
-.bl-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
-.bullet{position:relative;height:10px;border-radius:5px;background:var(--sunk);border:1px solid var(--line)}
-.b-bud{position:absolute;inset:0 auto 0 0;border-radius:5px;background:color-mix(in srgb,var(--ink) 12%,transparent)}
-.b-act{position:absolute;top:2px;bottom:2px;left:0;border-radius:3px;background:var(--good);transition:width .5s cubic-bezier(.2,.7,.2,1)}
-.b-act.over{background:var(--bad)}
-.b-tick{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink);border-radius:1px}
+/* ---------- Bento ---------- */
+.bento{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px}
+.s2{grid-column:span 2} .s3{grid-column:span 3} .s4{grid-column:span 4} .s6{grid-column:span 6}
+@media (max-width:860px){.s2,.s3,.s4{grid-column:span 3}.s6{grid-column:span 6}}
+@media (max-width:620px){.bento{grid-template-columns:1fr}.s2,.s3,.s4,.s6{grid-column:auto}}
+.d-head{display:grid;gap:18px}
+.d-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.d-name{margin:2px 0 0;font-size:clamp(28px,5vw,40px);font-weight:900;line-height:1.15;text-wrap:balance}
+.eq{display:grid;gap:8px}
+.eq-row{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:12px 16px;border-radius:16px;background:var(--sunk)}
+.eq-op{font-size:20px;color:var(--muted);font-weight:300;text-align:center}
+.eq-l{font-size:14px;font-weight:700}
+.eq-s{font-size:12px;color:var(--muted)}
+.eq-v{font-size:clamp(20px,2.6vw,26px);font-weight:800;line-height:1.2;text-align:right;white-space:nowrap}
+.eq-r{background:var(--good-soft)} .eq-r.neg{background:var(--bad-soft)}
+.eq-r .eq-v{font-size:clamp(24px,3.2vw,32px)}
+.eq-r .eq-s,.eq-r .eq-op{color:inherit;opacity:.9}
+.eq-r .eq-s{font-weight:700}
 
-/* ---------- 劇目詳細 ---------- */
-.panel{padding:20px;display:grid;gap:14px}
-.cat{border-bottom:1px solid var(--line)}
-.cat:first-child{border-top:1px solid var(--line)}
-.cat-h{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:grid;grid-template-columns:20px minmax(0,1fr) repeat(3,minmax(88px,auto));gap:6px 14px;align-items:center;padding:14px 6px;border-radius:10px}
+.ring-tile{display:grid;gap:10px;justify-items:center;align-content:center;text-align:center}
+.ring{position:relative;width:150px;height:150px;display:grid;place-items:center}
+.ring svg{position:absolute;inset:0;overflow:visible}
+.ring-c b{display:block;font-size:30px;font-weight:800;line-height:1}
+.ring-c span{font-size:11px;color:var(--muted)}
+.ring-leg{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;font-size:12px;color:var(--muted)}
+.ring-leg i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.arc{transition:stroke-dashoffset 1.2s var(--ease)}
+
+.mix{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center}
+.mix-d{position:relative;width:120px;height:120px;display:grid;place-items:center}
+.mix-d svg{position:absolute;inset:0}
+.mix-d b{font-size:13px;font-weight:800}
+.leg{display:grid;gap:6px;font-size:13px}
+.leg div{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:10px;align-items:center}
+.leg i{width:10px;height:10px;border-radius:3px}
+.leg span{min-width:0;line-height:1.35}
+@media (max-width:520px){.mix{grid-template-columns:1fr;justify-items:center}.leg{width:100%}}
+
+.scen{display:grid;gap:14px;align-content:center}
+.scen-big{font-size:clamp(30px,4vw,40px);font-weight:800;line-height:1.1}
+.scen input{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:transparent}
+.scen input::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:linear-gradient(90deg,var(--on) var(--p,50%),var(--sunk) var(--p,50%))}
+.scen input::-moz-range-track{height:8px;border-radius:4px;background:var(--sunk)}
+.scen input::-moz-range-progress{height:8px;border-radius:4px;background:var(--on)}
+.scen input::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;margin-top:-9px;border-radius:50%;background:#fff;border:0;box-shadow:0 2px 10px rgba(0,0,0,.25);transition:transform .4s var(--spring)}
+.scen input::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#fff;border:0;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.scen input:active::-webkit-slider-thumb{transform:scale(1.2)}
+.scen-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+
+/* 花費明細 */
+.cat{border-top:1px solid var(--line)}
+.cat-h{all:unset;box-sizing:border-box;cursor:pointer;width:100%;display:grid;grid-template-columns:22px minmax(0,1fr) repeat(3,minmax(90px,auto));gap:6px 14px;align-items:center;padding:14px 8px;border-radius:14px;transition:background .2s}
 .cat-h:hover{background:var(--sunk)}
-.cat-h:focus-visible{outline:2px solid var(--accent)}
-.chev{width:18px;height:18px;color:var(--muted);transition:transform .25s}
+.cat-h:focus-visible{outline:2px solid var(--ink)}
+.chev{width:18px;height:18px;color:var(--muted);transition:transform .5s var(--spring)}
 .cat.open .chev{transform:rotate(90deg)}
 .c-name{display:flex;align-items:center;gap:10px;min-width:0;font-weight:700}
 .c-name i{flex:none;width:10px;height:10px;border-radius:3px}
@@ -159,101 +218,92 @@ h2{font-size:17px;font-weight:700;margin:0}
 .c-num{text-align:right;font-size:14px;font-weight:700}
 .c-num em{display:none;font-style:normal;font-size:11px;color:var(--muted);font-weight:500}
 .c-bar{grid-column:2 / -1}
-.cat-b{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s cubic-bezier(.2,.7,.2,1)}
+.cat-b{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s var(--ease)}
 .cat.open .cat-b{grid-template-rows:1fr}
 .cat-b > div{overflow:hidden}
-.items{padding:0 6px 14px 40px;display:grid;gap:4px}
-.item{display:grid;grid-template-columns:minmax(0,1fr) repeat(3,minmax(88px,auto));gap:14px;padding:9px 12px;border-radius:10px;background:var(--sunk);font-size:14px}
+.items{padding:2px 8px 16px 44px;display:grid;gap:6px}
+.item{display:grid;grid-template-columns:minmax(0,1fr) repeat(3,minmax(90px,auto));gap:14px;padding:10px 12px;border-radius:12px;background:var(--sunk);font-size:14px;opacity:0;transform:translateY(-6px);transition:opacity .3s,transform .4s var(--ease)}
+.cat.open .item{opacity:1;transform:none}
+.cat.open .item:nth-child(2){transition-delay:.04s} .cat.open .item:nth-child(3){transition-delay:.08s} .cat.open .item:nth-child(4){transition-delay:.12s} .cat.open .item:nth-child(n+5){transition-delay:.16s}
 .item small{display:block;font-size:12px;color:var(--muted)}
 .item .c-num{font-weight:500}
-.none{font-size:13px;color:var(--muted);padding:8px 12px}
-.mis{font-size:12px;color:var(--warn);padding:4px 12px}
-.cols,.tot{display:grid;grid-template-columns:20px minmax(0,1fr) repeat(3,minmax(88px,auto));gap:14px;padding-inline:6px}
-.cols{font-size:11px;font-weight:700;color:var(--muted);padding-bottom:8px}
+.none{font-size:13px;color:var(--muted);padding:6px 12px}
+.mis{font-size:12px;color:var(--warn);padding:2px 12px}
+.cols,.tot{display:grid;grid-template-columns:22px minmax(0,1fr) repeat(3,minmax(90px,auto));gap:14px;padding-inline:8px}
+.cols{font-size:11px;font-weight:700;color:var(--muted);padding-block:6px 10px}
 .cols span:nth-child(n+3){text-align:right}
-.tot{padding-top:14px;font-weight:800}
+.tot{padding-block:14px 0;border-top:1px solid var(--line);font-weight:800}
 .tot .c-num{font-size:15px}
 @media (max-width:620px){
   .cols{display:none}
-  .cat-h,.tot{grid-template-columns:20px repeat(3,minmax(0,1fr))}
+  .cat-h,.tot{grid-template-columns:22px repeat(3,minmax(0,1fr))}
   .c-name{grid-column:2 / -1}
   .cat-h > :nth-child(3),.tot > :nth-child(3){grid-column:2}
   .cat-h > :nth-child(4),.tot > :nth-child(4){grid-column:3}
   .cat-h > :nth-child(5),.tot > :nth-child(5){grid-column:4}
   .c-num{text-align:left} .c-num em{display:block}
-  .items{padding-left:6px}
+  .items{padding-left:8px}
   .item{grid-template-columns:repeat(3,minmax(0,1fr))}
   .item > :first-child{grid-column:1 / -1}
 }
-.inc-r{display:grid;grid-template-columns:minmax(0,1fr) repeat(3,minmax(88px,auto));gap:14px;padding:11px 6px;border-bottom:1px solid var(--line);font-size:14px}
+.inc-r{display:grid;grid-template-columns:minmax(0,1fr) repeat(3,minmax(90px,auto));gap:14px;padding:12px 8px;border-top:1px solid var(--line);font-size:14px}
 .inc-r > :not(:first-child){text-align:right}
-.inc-r.h{font-size:11px;font-weight:700;color:var(--muted);padding-block:0 8px}
-.inc-r.t{border-bottom:0;font-weight:800;font-size:15px}
+.inc-r.h{font-size:11px;font-weight:700;color:var(--muted);border-top:0;padding-block:6px 10px}
+.inc-r.t{font-weight:800;font-size:15px}
 @media (max-width:620px){.inc-r{grid-template-columns:repeat(3,minmax(0,1fr))}.inc-r > :first-child{grid-column:1 / -1;font-weight:700}.inc-r > :not(:first-child){text-align:left}.inc-r.h{display:none}.inc-r .c-num em{display:block}}
-.scen{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 20px;align-items:center}
-.scen input{grid-column:1 / -1;width:100%;accent-color:var(--hero1)}
-:root[data-theme="dark"] .scen input{accent-color:var(--gold)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .scen input{accent-color:var(--gold)}}
-.scen .big{font-size:30px;font-weight:800;text-align:right}
 .note{font-size:12px;color:var(--muted)}
+.empty{padding:36px;text-align:center;color:var(--muted);border-radius:24px}
 
-/* 劇目頁頂部 */
-.ph{padding:22px;display:grid;gap:22px}
-.ph-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-.ph-meta{font-size:12px;color:var(--muted);letter-spacing:.04em}
-.ph-name{margin:2px 0 0;font-size:clamp(26px,4.5vw,34px);font-weight:900;line-height:1.2;text-wrap:balance}
-.eq{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1.15fr);align-items:stretch;gap:10px}
-.eq-c{display:grid;gap:2px;align-content:center;padding:14px 16px;border-radius:14px;background:var(--sunk);border:1px solid var(--line);min-width:0}
-.eq-v{font-size:clamp(20px,3vw,26px);font-weight:800;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.eq-s{font-size:12px;color:var(--muted)}
-.eq-op{align-self:center;font-size:22px;font-weight:300;color:var(--muted)}
-.eq-r.pos{background:var(--good-soft);border-color:transparent} .eq-r.neg{background:var(--bad-soft);border-color:transparent}
-.eq-r.pos .eq-s,.eq-r.neg .eq-s{color:inherit;opacity:.85;font-weight:600}
-@media (max-width:640px){.eq{grid-template-columns:1fr 1fr}.eq-op{display:none}.eq-r{grid-column:1 / -1}}
-.seat{display:grid;gap:8px;padding-top:4px}
-.seat-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
-.seat-t{position:relative;height:14px;border-radius:7px;background:var(--sunk);border:1px solid var(--line);margin-top:22px}
-.seat-f{position:absolute;inset:0 auto 0 0;border-radius:7px}
-.seat-f.s-ok{background:linear-gradient(90deg,color-mix(in srgb,var(--good) 55%,transparent),var(--good))}
-.seat-f.s-low{background:linear-gradient(90deg,color-mix(in srgb,var(--bad) 55%,transparent),var(--bad))}
-.view.enter .seat-f{animation:grow .9s .2s cubic-bezier(.2,.7,.2,1) both}
-.seat-m{position:absolute;top:-6px;bottom:-6px;width:2px;margin-left:-1px;background:var(--ink)}
-.seat-m span{position:absolute;bottom:calc(100% + 2px);left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;white-space:nowrap;color:var(--ink)}
-.seat-m.bd{background:var(--muted)} .seat-m.bd span{color:var(--muted);bottom:auto;top:calc(100% + 2px)}
-.seat-x{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
-.mix{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:18px}
-.stack{display:flex;height:12px;border-radius:6px;overflow:hidden;gap:2px}
-.stack span{display:block;height:100%}
-.stack{transform-origin:left}
-.view.enter .stack{animation:wipe .9s .3s cubic-bezier(.2,.7,.2,1) both}
-@keyframes wipe{from{transform:scaleX(0)}}
-.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted)}
-.legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px}
-.lock{max-width:380px;margin:40px auto;padding:28px;display:grid;gap:14px;text-align:center}
-.lock h2{font-size:20px}
-.lock input{font:inherit;font-size:18px;text-align:center;letter-spacing:.2em;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--sunk);color:var(--ink)}
-.lock .primary{border:0;border-radius:12px;padding:12px;font-weight:700;background:var(--chip-on);color:var(--chip-on-ink)}
+/* 鎖 */
+.lock{max-width:380px;margin:40px auto;padding:28px;display:grid;gap:14px;text-align:center;border-radius:28px}
+.lock h2{font-size:22px}
+.lock input{font:inherit;font-size:20px;text-align:center;letter-spacing:.25em;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--sunk);color:var(--ink)}
+.lock .primary{border:0;border-radius:14px;padding:14px;font-weight:800;background:var(--on);color:var(--on-ink);transition:transform .5s var(--spring)}
+.lock .primary:active{transform:scale(.96)}
 .lock .err{color:var(--bad);font-size:13px;min-height:1em}
-.empty{padding:36px;text-align:center;color:var(--muted)}
-.skel{height:160px;border-radius:22px;background:linear-gradient(90deg,var(--surface),var(--sunk),var(--surface));background-size:200% 100%;animation:sh 1.2s infinite}
-@keyframes sh{to{background-position:-200% 0}}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.skel{height:180px;border-radius:24px}
+
+/* ---------- 動畫 ---------- */
+@media (prefers-reduced-motion:no-preference){
+  /* 沒有 View Transitions 的瀏覽器：區塊依次彈入 */
+  .view.enter > *,.view.enter .play,.view.enter .bento > *{animation:rise .7s var(--spring) both}
+  .view.enter > :nth-child(2),.view.enter .play:nth-child(2),.view.enter .bento > :nth-child(2){animation-delay:.05s}
+  .view.enter > :nth-child(3),.view.enter .play:nth-child(3),.view.enter .bento > :nth-child(3){animation-delay:.1s}
+  .view.enter .play:nth-child(n+4),.view.enter .bento > :nth-child(4){animation-delay:.15s}
+  .view.enter .bento > :nth-child(n+5){animation-delay:.2s}
+  @keyframes rise{from{opacity:0;transform:translateY(18px) scale(.98)}}
+  .view.enter .fill{animation:grow 1s .25s var(--ease) both}
+  @keyframes grow{from{transform:scaleX(0)}}
+  /* 捲動時才浮現 */
+  @supports (animation-timeline:view()){
+    .reveal{animation:reveal linear both;animation-timeline:view();animation-range:entry 0% entry 35%}
+    @keyframes reveal{from{opacity:.2;transform:translateY(24px) scale(.97)}}
+  }
+  /* 共享元素轉場 */
+  ::view-transition-group(*){animation-duration:.55s;animation-timing-function:var(--ease)}
+  ::view-transition-old(root){animation:.25s ease both vt-out}
+  ::view-transition-new(root){animation:.45s var(--ease) .08s both vt-in}
+  @keyframes vt-out{to{opacity:0;transform:scale(.98)}}
+  @keyframes vt-in{from{opacity:0;transform:translateY(12px)}}
+}
+@media (prefers-reduced-motion:reduce){.mesh i{animation:none}*{transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
 
 
-<div class="shell"><div class="in">
-  <div class="top">
-    <div class="logo" aria-hidden="true">劇</div>
-    <div class="ttl"><b id="appTitle">舞台劇損益</b><span id="updated">載入中…</span></div>
-    <div class="sp"></div>
-    <button class="btn" id="reload" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v5h-5"/></svg>更新</button>
-  </div>
-  <nav class="chips" id="chips" aria-label="切換劇目"></nav>
-</div></div>
-
-<main class="in"><div class="view" id="view"><div class="skel"></div><div class="skel" style="height:220px"></div></div></main>
+<div class="mesh" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<div class="app">
+  <header class="bar"><div class="in">
+    <div class="bar-in glass">
+      <div class="logo" aria-hidden="true">劇</div>
+      <div class="ttl"><b id="appTitle">舞台劇損益</b><span id="updated">載入中…</span></div>
+      <button class="ibtn" id="reload" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v5h-5"/></svg>更新</button>
+    </div>
+    <div class="seg-wrap"><nav class="seg glass" id="seg" aria-label="切換劇目"><span class="seg-ind" id="segInd"></span></nav></div>
+  </div></header>
+  <main class="in"><div class="view" id="view"><div class="skel glass"></div><div class="skel glass" style="height:260px"></div></div></main>
+</div>
 
 <script>
 const HK=new Intl.NumberFormat('zh-HK',{maximumFractionDigits:0});
@@ -266,9 +316,10 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const short=l=>String(l).replace(/^\d\.\s*/,'');
 const CHEV='<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>';
 const ARROW='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let DATA=null, VIEW=-1;
 
-/* ---------- 示範資料（只在 Apps Script 以外出現）---------- */
+/* ---------- 示範資料（只在未連接 Google Sheet 時出現，全部虛構）---------- */
 const COSTS=[['1. 演職員費用（演員及編劇）','Artist Fee'],['2. 製作費及創作團隊','Production & Creative'],['3. 場地租金','Venue Rental'],['4. 市場推廣及宣傳','Marketing & Promotion'],['5. 票務管理','Ticketing Management'],['6. POPTicket 票務平台收費','Pop Ticket Charge'],['7. 應急／預備金','Contingency']];
 function mk(name,shows,gross,fee,rate,costs,sponsor,merch,act,items){
   const net=gross*(1-fee),total=costs.reduce((a,b)=>a+b,0),other=sponsor+merch,be=Math.max(0,(total-other)/net);
@@ -307,16 +358,23 @@ function actualPnL(p){
 }
 const riskClass=r=>/高/.test(r)?'r-high':/中/.test(r)?'r-mid':'r-low';
 const riskDot=r=>/高/.test(r)?'var(--bad)':/中/.test(r)?'var(--warn)':'var(--good)';
-function bullet(b,a,max){
-  const bw=Math.min(100,max?b/max*100:0), aw=a==null?0:Math.min(100,max?a/max*100:0);
-  return `<div class="bullet" role="img" aria-label="預算 ${plain(b)}，實際 ${a==null?'未有':plain(a)}"><div class="b-bud" style="width:${bw}%"></div>${a==null?'':`<div class="b-act${a>b?' over':''}" style="width:${aw}%"></div>`}<div class="b-tick" style="left:calc(${bw}% - 1px)"></div></div>`;
+const actRate=p=>hasActual(p)&&p.actual.ticket&&p.fullNet?p.actual.ticket/p.fullNet:null;
+
+/* 圓環：值 v（0–1），可加一條刻度 t */
+function ring(size,stroke,v,color,t){
+  const r=(size-stroke)/2, C=2*Math.PI*r, c=size/2, val=Math.max(0,Math.min(1,v||0));
+  const tick=t==null?'':(()=>{const a=(Math.min(1,t)*360-90)*Math.PI/180;const x1=c+(r-stroke/2-3)*Math.cos(a),y1=c+(r-stroke/2-3)*Math.sin(a),x2=c+(r+stroke/2+3)*Math.cos(a),y2=c+(r+stroke/2+3)*Math.sin(a);return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round"/>`;})();
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true"><circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="var(--sunk)" stroke-width="${stroke}"/>
+    <circle class="arc" cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${reduced?C*(1-val):C}" data-off="${C*(1-val)}" transform="rotate(-90 ${c} ${c})"/>${tick}</svg>`;
 }
-function donut(parts,size){
-  const r=size/2-9, C=2*Math.PI*r, tot=parts.reduce((a,p)=>a+p.v,0)||1; let off=0;
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="成本結構"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="14"/>`+
-    parts.map(p=>{const len=p.v/tot*C;const s=`<circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${p.c}" stroke-width="14" stroke-dasharray="${Math.max(0,len-2)} ${C}" stroke-dashoffset="${-off}" transform="rotate(-90 ${size/2} ${size/2})"><title>${esc(p.l)} ${pct(p.v/tot)}</title></circle>`;off+=len;return s;}).join('')+'</svg>';
+function donut(parts,size,stroke){
+  const r=(size-stroke)/2, C=2*Math.PI*r, c=size/2, tot=parts.reduce((a,p)=>a+p.v,0)||1; let off=0;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="成本結構">`+parts.map(p=>{const len=p.v/tot*C;const s=`<circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${p.c}" stroke-width="${stroke}" stroke-dasharray="${Math.max(0,len-3)} ${C}" stroke-dashoffset="${-off}" transform="rotate(-90 ${c} ${c})"/>`;off+=len;return s;}).join('')+'</svg>';
 }
-const catParts=costs=>costs.map((c,k)=>({v:c.budget,c:`var(--c${k+1})`,l:short(c.label)}));
+function bar(b,a,max){
+  const bw=Math.min(100,max?b/max*100:0), aw=a==null?bw:Math.min(100,max?a/max*100:0);
+  return `<div class="track" role="img" aria-label="預算 ${plain(b)}，實際 ${a==null?'未有':plain(a)}"><div class="fill${a!=null&&a>b?' over':''}" style="width:${aw}%;${a==null?'opacity:.35;background:var(--muted)':''}"></div>${a==null?'':`<div class="mark" style="left:calc(${bw}% - 1px)"></div>`}</div>`;
+}
 
 /* ---------- 資料 ----------
    API_URL：Apps Script 網頁應用程式網址（/exec 結尾）。留空時顯示示範資料。 */
@@ -324,26 +382,26 @@ const API_URL='https://script.google.com/macros/s/AKfycbwyciLmRFC6x1NlS4zsLbooWz
 const inGAS=typeof google!=='undefined'&&google.script&&google.script.run;
 const reloadBtn=document.getElementById('reload');
 const store={get:k=>{try{return localStorage.getItem(k)}catch(_){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(_){}},del:k=>{try{localStorage.removeItem(k)}catch(_){}}};
-function done(d){DATA=d;reloadBtn.classList.remove('spin');if(VIEW>=(DATA.plays||[]).length)VIEW=-1;render(false);}
+function done(d){DATA=d;reloadBtn.classList.remove('spin');if(VIEW>=(DATA.plays||[]).length)VIEW=-1;render();}
 function fail(msg){reloadBtn.classList.remove('spin');
   if(DATA){document.getElementById('updated').textContent='離線 · 顯示上次資料';return;}
-  document.getElementById('view').innerHTML=`<div class="card empty">${esc(msg)}</div>`;document.getElementById('updated').textContent='讀取失敗';}
+  document.getElementById('view').innerHTML=`<div class="glass empty">${esc(msg)}</div>`;document.getElementById('updated').textContent='讀取失敗';}
 function lockScreen(err){
   reloadBtn.classList.remove('spin');
-  document.getElementById('chips').innerHTML='';
+  [...document.querySelectorAll('#seg button')].forEach(b=>b.remove());
+  document.getElementById('segInd').style.width='0';
   document.getElementById('updated').textContent='需要存取碼';
-  document.getElementById('view').innerHTML=`<form class="card lock" id="lockForm"><h2>輸入存取碼</h2><p class="hint" style="margin:0">輸入一次之後，這部裝置會記住。</p>
-    <input id="code" type="password" inputmode="text" autocomplete="current-password" aria-label="存取碼" required>
+  document.getElementById('view').innerHTML=`<form class="glass lock" id="lockForm"><h2>輸入存取碼</h2><p class="hint" style="margin:0">輸入一次之後，這部裝置會記住。</p>
+    <input id="code" type="password" autocomplete="current-password" aria-label="存取碼" required>
     <button class="primary" type="submit">進入</button><div class="err">${esc(err||'')}</div></form>`;
-  const f=document.getElementById('lockForm');
-  f.addEventListener('submit',e=>{e.preventDefault();store.set('pnl-key',document.getElementById('code').value.trim());load();});
+  document.getElementById('lockForm').addEventListener('submit',e=>{e.preventDefault();store.set('pnl-key',document.getElementById('code').value.trim());load();});
   document.getElementById('code').focus();
 }
 function load(){
   reloadBtn.classList.add('spin');
   if(inGAS){google.script.run.withSuccessHandler(done).withFailureHandler(e=>fail('讀取失敗：'+(e.message||e))).getData();return;}
-  if(!API_URL){setTimeout(()=>done(SAMPLE),250);return;}
-  // 秘密連結：網址 #k=秘密連結碼，打開即自動登入；網址保留這組碼，加到主畫面時一併帶上（手動輸入的密碼不會放進網址）
+  if(!API_URL){setTimeout(()=>done(SAMPLE),300);return;}
+  // 秘密連結：網址 #k=秘密連結碼，打開即自動登入（手動輸入的密碼不會放進網址）
   const m=location.hash.match(/^#k=(.+)$/);
   if(m){try{store.set('pnl-key',decodeURIComponent(m[1]).trim());}catch(_){}}
   const key=store.get('pnl-key');
@@ -357,88 +415,91 @@ function load(){
 }
 reloadBtn.addEventListener('click',load);
 
-/* ---------- 切換（不改網址，外框保持不動）---------- */
-function go(i){VIEW=i;render(true);window.scrollTo({top:0,behavior:'smooth'});}
-document.addEventListener('click',e=>{const t=e.target.closest('[data-go]');if(t){go(+t.dataset.go);}});
+/* ---------- 切換：View Transitions 共享元素變形，不支援時用彈入動畫 ---------- */
+function go(i,fromEl){
+  if(i===VIEW)return;
+  const prev=VIEW;
+  const swap=()=>{VIEW=i;render(true);window.scrollTo(0,0);};
+  if(document.startViewTransition&&!reduced){
+    // 只為來回的那一張卡命名，讓它變形成詳細頁頂部（返回時反過來）
+    const name=el=>{if(el)el.style.viewTransitionName='hero';};
+    const fwd=prev<0&&i>=0, back=prev>=0&&i<0;
+    if(fwd)name(document.querySelector(`.play[data-go="${i}"]`));
+    if(back)name(document.querySelector('.d-hero'));
+    const vt=document.startViewTransition(()=>{swap();
+      if(fwd)name(document.querySelector('.d-hero'));
+      if(back)name(document.querySelector(`.play[data-go="${prev}"]`));
+    });
+    vt.finished.finally(()=>document.querySelectorAll('.play,.d-hero').forEach(e=>e.style.viewTransitionName=''));
+  }else swap();
+}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-go]');if(t)go(+t.dataset.go,t);});
+/* 跟隨游標的光暈 */
+document.addEventListener('pointermove',e=>{const el=e.target.closest('.lit');if(!el)return;const r=el.getBoundingClientRect();el.style.setProperty('--mx',(e.clientX-r.left)+'px');el.style.setProperty('--my',(e.clientY-r.top)+'px');},{passive:true});
 
-function render(animate){
+function moveInd(){
+  const seg=document.getElementById('seg'), cur=seg.querySelector('[aria-current="true"]'), ind=document.getElementById('segInd');
+  if(!cur){ind.style.width='0';return;}
+  ind.style.width=cur.offsetWidth+'px'; ind.style.transform=`translateX(${cur.offsetLeft}px)`;
+  cur.scrollIntoView({block:'nearest',inline:'nearest',behavior:reduced?'auto':'smooth'});
+}
+window.addEventListener('resize',moveInd);
+
+function render(nav){
   if(!DATA)return;
   document.getElementById('appTitle').textContent=(DATA.title||'舞台劇損益').replace(/（副本）/,'');
   document.getElementById('updated').textContent=DATA.updated==='示範資料'?'示範資料':'更新於 '+DATA.updated;
-  const P=DATA.plays||[];
-  const chips=document.getElementById('chips');
-  chips.innerHTML=`<button class="chip" type="button" data-go="-1" aria-current="${VIEW<0}">總覽</button>`+
-    P.map((p,i)=>`<button class="chip" type="button" data-go="${i}" aria-current="${VIEW===i}"><span class="dot" style="background:${riskDot(p.risk)}"></span>${esc(p.name)}</button>`).join('');
-  const cur=chips.querySelector('[aria-current="true"]'); if(cur)cur.scrollIntoView({block:'nearest',inline:'nearest'});
+  const P=DATA.plays||[], seg=document.getElementById('seg');
+  [...seg.querySelectorAll('button')].forEach(b=>b.remove());
+  seg.insertAdjacentHTML('beforeend',`<button type="button" data-go="-1" aria-current="${VIEW<0}">總覽</button>`+
+    P.map((p,i)=>`<button type="button" data-go="${i}" aria-current="${VIEW===i}"><span class="dot" style="background:${riskDot(p.risk)}"></span>${esc(p.name)}</button>`).join(''));
+  requestAnimationFrame(moveInd);
   const v=document.getElementById('view');
-  v.innerHTML=(DATA===SAMPLE?'<div class="demo">示範資料。連接 Google Sheet 後會顯示真實數字。</div>':'')+(VIEW<0?homeHTML(P):detailHTML(P[VIEW]));
-  v.classList.remove('enter');void v.offsetWidth;v.classList.add('enter');
+  v.innerHTML=(DATA===SAMPLE?'<div class="glass demo">示範資料（全部虛構）。連接 Google Sheet 後會顯示真實數字。</div>':'')+(VIEW<0?homeHTML(P):detailHTML(P[VIEW],VIEW));
+  if(!(nav&&document.startViewTransition&&!reduced)){v.classList.remove('enter');void v.offsetWidth;v.classList.add('enter');}
   if(VIEW>=0)wireDetail(P[VIEW]);
-  countUp(v.querySelector('.h-big'));
+  // 圓環動畫＋數字滾動
+  requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('.arc').forEach(a=>a.style.strokeDashoffset=a.dataset.off)));
+  document.querySelectorAll('[data-count]').forEach(countUp);
 }
-
-/* 主數字由 0 滾到目標值 */
 function countUp(el){
-  if(!el||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  const target=+el.dataset.v; if(isNaN(target))return;
-  const t0=performance.now(), dur=700;
-  const step=t=>{const k=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-k,3);el.innerHTML=money(target*e);if(k<1)requestAnimationFrame(step);};
+  const target=+el.dataset.count; if(isNaN(target)||reduced)return;
+  const t0=performance.now(),dur=900;
+  const step=t=>{const k=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-k,4);el.innerHTML=money(target*e);if(k<1)requestAnimationFrame(step);};
   requestAnimationFrame(step);
 }
 
 /* ---------- 總覽 ---------- */
 function homeHTML(P){
-  if(!P.length)return '<div class="card empty">表格裡還未有劇目。在「輸入與計算」的「劇名」一行填上劇名，再按「更新」。</div>';
-  const sum=f=>P.reduce((a,p)=>a+(f(p)||0),0);
-  const acts=P.filter(hasActual);
-  const net=sum(p=>p.fullNet),other=sum(p=>p.sponsor+p.merch),cost=sum(p=>p.totalCost);
-  const be=net?Math.max(0,(cost-other)/net):null, bud=sum(p=>p.budgetPnL);
-  const act=acts.reduce((a,p)=>a+actualPnL(p),0), actBud=acts.reduce((a,p)=>a+p.budgetPnL,0);
-  const main=acts.length?act:bud, d=act-actBud;
-  const agg=COSTS.map((_,k)=>({label:P[0].costs[k]?.label||COSTS[k][0],budget:sum(p=>p.costs[k]?p.costs[k].budget:0)}));
+  if(!P.length)return '<div class="glass empty">表格裡還未有劇目。在「輸入與計算」的「劇名」一行填上劇名，再按「更新」。</div>';
   const maxCost=Math.max(...P.map(p=>Math.max(p.totalCost,actualCost(p)||0)),1);
-
-  // 需要留意：超支 5% 以上的類別、高風險劇目
-  const alerts=[];
-  P.forEach((p,i)=>{
-    p.costs.forEach(c=>{if(c.actual!=null&&c.budget>0&&c.actual>c.budget*1.05)alerts.push({i,lv:'bad',t:`${p.name}：${short(c.label)}超支 ${plain(c.actual-c.budget)}`,s:`預算 ${plain(c.budget)} → 實際 ${plain(c.actual)}（+${pct(c.actual/c.budget-1)}）`,w:c.actual-c.budget});});
-    if(/高/.test(p.risk))alerts.push({i,lv:'warn',t:`${p.name}：保本售票率 ${pct(p.breakevenRate)}`,s:'要賣超過八成票先回本',w:0});
-  });
-  alerts.sort((a,b)=>b.w-a.w);
-
   return `
-  <section style="display:grid;gap:12px">
-    <div class="head"><h2>需要留意</h2><span class="hint">${alerts.length?alerts.length+' 項':''}</span></div>
-    ${alerts.length?`<div class="alerts">${alerts.slice(0,6).map(a=>`<button class="alert" type="button" data-go="${a.i}"><span class="a-ic ${a.lv}">${a.lv==='bad'?'↑':'!'}</span><span><div class="a-t">${esc(a.t)}</div><div class="a-s">${esc(a.s)}</div></span><span class="go">${ARROW}</span></button>`).join('')}</div>`
-      :'<div class="ok">✓ 暫時沒有超支或高風險的項目</div>'}
-  </section>
-
-  <section style="display:grid;gap:12px">
-    <div class="head"><h2>劇目</h2><span class="hint">點擊查看詳細花費</span></div>
-    <div class="plays">${P.map((p,i)=>{const ap=actualPnL(p),ac=actualCost(p);return `
-      <button class="play" type="button" data-go="${i}">
-        <div class="p-head"><div><div class="p-name">${esc(p.name)}</div><div class="p-meta">${p.shows} 場 · 滿座票房 <span class="n">${plain(p.fullGross)}</span></div></div><span class="pill ${riskClass(p.risk)}">${esc(p.risk||'—')}</span></div>
-        <div class="duo">
-          <div><div class="lbl">預算損益</div><div class="v n ${tone(p.budgetPnL)}">${money(p.budgetPnL)}</div></div>
-          <div><div class="lbl">實際損益</div><div class="v n ${ap==null?'na':tone(ap)}">${ap==null?'未結算':money(ap)}</div></div>
+  <section class="sec">
+    <div class="sec-h"><h2>劇目</h2><span class="hint">點擊查看詳細花費</span></div>
+    <div class="plays">${P.map((p,i)=>{const ap=actualPnL(p),ac=actualCost(p),rate=actRate(p)??p.budgetRate;const main=ap??p.budgetPnL;
+      return `<button class="play glass lit reveal" type="button" data-go="${i}">
+        <div class="p-top"><div><div class="p-no n">No.${String(i+1).padStart(2,'0')}</div><div class="p-name">${esc(p.name)}</div><div class="p-meta">${p.shows} 場 · 滿座票房 <span class="n">${plain(p.fullGross)}</span></div></div><span class="pill ${riskClass(p.risk)}">${esc(p.risk||'—')}</span></div>
+        <div class="p-mid">
+          <div><div class="lbl">${ap==null?'預算損益':'實際損益'}</div><div class="p-big n ${tone(main)}">${money(main)}</div><div class="p-sub">${ap==null?'實際數字未填':'預算 '+plain(p.budgetPnL)}</div></div>
+          <div class="p-ring">${ring(72,7,rate,rate>=p.breakevenRate?'var(--good)':'var(--bad)',p.breakevenRate)}<b class="n">${pct(rate).replace('.0','')}</b><small>${actRate(p)==null?'預算售票':'實際售票'}</small></div>
         </div>
-        <div class="bl"><div class="bl-row"><span>成本${ac==null?'（預算）':' 實際 / 預算'}</span><span class="n">${ac==null?plain(p.totalCost):plain(ac)+' / '+plain(p.totalCost)}</span></div>${bullet(p.totalCost,ac,maxCost)}</div>
-        <div class="p-foot"><span>保本 <b class="n">${pct(p.breakevenRate)}</b> · 預算售票 <b class="n">${pct(p.budgetRate)}</b></span><span class="go">詳情 ${ARROW}</span></div>
+        <div class="p-bar"><div class="p-bar-h"><span>成本${ac==null?'（預算）':' 實際／預算'}</span><span class="n">${ac==null?plain(p.totalCost):plain(ac)+' / '+plain(p.totalCost)}</span></div>${bar(p.totalCost,ac,maxCost)}</div>
+        <div class="p-foot"><span>保本線 <b class="n">${pct(p.breakevenRate)}</b></span><span class="go">詳情 ${ARROW}</span></div>
       </button>`;}).join('')}</div>
   </section>`;
 }
 
-/* ---------- 劇目詳細 ---------- */
+/* ---------- 劇目詳細（Bento）---------- */
 function diffCell(b,a,isCost){if(a==null)return '<span class="na">—</span>';const d=a-b;const c=isCost?(d>0?'neg':d<0?'pos':''):tone(d);return `<span class="${c}">${signed(d)}</span>`;}
-function detailHTML(p){
-  const ap=actualPnL(p), ac=actualCost(p), dd=ap==null?null:ap-p.budgetPnL, act=ap!=null;
+function detailHTML(p,idx){
+  const ap=actualPnL(p), ac=actualCost(p), act=ap!=null, dd=act?ap-p.budgetPnL:null;
   const incB=p.budgetTicket+p.sponsor+p.merch;
   const incA=act?(p.actual.ticket||0)+(p.actual.sponsor??p.sponsor)+(p.actual.merch??p.merch):incB;
-  const pnl=act?ap:p.budgetPnL;
-  const actRate=act&&p.actual.ticket&&p.fullNet?p.actual.ticket/p.fullNet:null;
+  const pnl=act?ap:p.budgetPnL, ar=actRate(p), rate=ar??p.budgetRate;
   const maxC=Math.max(...p.costs.map(c=>Math.max(c.budget,c.actual||0)),1);
   const firstOver=p.costs.findIndex(c=>c.actual!=null&&c.actual>c.budget);
-  const openK=firstOver>=0?firstOver:0;
+  const openK=firstOver>=0?firstOver:0, tot=p.totalCost||1;
+
   const cats=p.costs.map((c,k)=>{
     const items=c.items||[], sb=items.reduce((a,x)=>a+x.budget,0);
     const mis=items.length&&Math.round(sb)!==Math.round(c.budget);
@@ -449,7 +510,7 @@ function detailHTML(p){
         <div class="c-num n"><em>預算</em>${money(c.budget)}</div>
         <div class="c-num n"><em>實際</em>${c.actual==null?'<span class="na">—</span>':money(c.actual)}</div>
         <div class="c-num n"><em>差異</em>${diffCell(c.budget,c.actual,true)}</div>
-        <div class="c-bar">${bullet(c.budget,c.actual,maxC)}</div>
+        <div class="c-bar">${bar(c.budget,c.actual,maxC)}</div>
       </button>
       <div class="cat-b"><div><div class="items">
         ${items.length?items.map(x=>`<div class="item"><div>${esc(x.item)}${x.note?`<small>${esc(x.note)}</small>`:''}</div>
@@ -460,71 +521,65 @@ function detailHTML(p){
     </div>`;}).join('');
   const inc=(l,b,a)=>`<div class="inc-r"><div>${l}</div><div class="c-num n"><em>預算</em>${money(b)}</div><div class="c-num n"><em>實際</em>${a==null?'<span class="na">—</span>':money(a)}</div><div class="c-num n"><em>差異</em>${diffCell(b,a,false)}</div></div>`;
 
-  return `
-  <section class="card ph">
-    <div class="ph-top">
-      <div class="ph-id"><div class="ph-meta n">No.${String(DATA.plays.indexOf(p)+1).padStart(2,'0')} · ${p.shows} 場 · 滿座票房 ${plain(p.fullGross)}</div><h1 class="ph-name">${esc(p.name)}</h1></div>
-      <span class="pill ${riskClass(p.risk)}">${esc(p.risk||'—')}</span>
-    </div>
-    <div class="eq">
-      <div class="eq-c"><span class="lbl">收入${act?'':'（預算）'}</span><span class="eq-v n">${money(incA)}</span><span class="eq-s">${act?'預算 '+plain(incB):'門票＋贊助＋周邊'}</span></div>
-      <span class="eq-op">−</span>
-      <div class="eq-c"><span class="lbl">成本${act?'':'（預算）'}</span><span class="eq-v n">${money(ac??p.totalCost)}</span><span class="eq-s">${act?'預算 '+plain(p.totalCost):'七項成本合計'}</span></div>
-      <span class="eq-op">=</span>
-      <div class="eq-c eq-r ${tone(pnl)}"><span class="lbl">${act?'實際損益':'預算損益'}</span><span class="eq-v n h-big" data-v="${pnl}">${money(pnl)}</span><span class="eq-s">${act?(dd>=0?'▲ 比預算多 ':'▼ 比預算少 ')+plain(Math.abs(dd)):'實際數字未填'}</span></div>
-    </div>
-    <div class="seat">
-      <div class="seat-h"><span class="lbl">售票率</span><span class="hint">${actRate==null?'預算 '+pct(p.budgetRate):'實際 <b class="n">'+pct(actRate)+'</b> · 預算 '+pct(p.budgetRate)}</span></div>
-      <div class="seat-t">
-        <div class="seat-f ${(actRate??p.budgetRate)>=p.breakevenRate?'s-ok':'s-low'}" style="width:${Math.min(100,(actRate??p.budgetRate)*100)}%"></div>
-        <div class="seat-m be" style="left:${Math.min(100,p.breakevenRate*100)}%"><span>保本 ${pct(p.breakevenRate)}</span></div>
-        ${actRate==null?'':`<div class="seat-m bd" style="left:${Math.min(100,p.budgetRate*100)}%"><span>預算 ${pct(p.budgetRate)}</span></div>`}
+  return `<div class="bento">
+    <section class="tile glass lit d-hero s4">
+      <div class="d-head">
+        <div class="d-top"><div><div class="p-no n">No.${String(idx+1).padStart(2,'0')} · ${p.shows} 場 · 滿座票房 ${plain(p.fullGross)}</div><h1 class="d-name">${esc(p.name)}</h1></div><span class="pill ${riskClass(p.risk)}">${esc(p.risk||'—')}</span></div>
+        <div class="eq">
+          <div class="eq-row"><span class="eq-op"></span><div><div class="eq-l">收入${act?'':'（預算）'}</div><div class="eq-s">${act?'預算 '+plain(incB):'門票＋贊助＋周邊'}</div></div><span class="eq-v n">${money(incA)}</span></div>
+          <div class="eq-row"><span class="eq-op">−</span><div><div class="eq-l">成本${act?'':'（預算）'}</div><div class="eq-s">${act?'預算 '+plain(p.totalCost):'七項成本合計'}</div></div><span class="eq-v n">${money(ac??p.totalCost)}</span></div>
+          <div class="eq-row eq-r ${tone(pnl)}"><span class="eq-op">=</span><div><div class="eq-l">${act?'實際損益':'預算損益'}</div><div class="eq-s">${act?(dd>=0?'▲ 比預算多 ':'▼ 比預算少 ')+plain(Math.abs(dd)):'實際數字未填'}</div></div><span class="eq-v n" data-count="${pnl}">${money(pnl)}</span></div>
+        </div>
       </div>
-      <div class="seat-x n"><span>0%</span><span>50%</span><span>100%</span></div>
-    </div>
-    <div class="mix">
-      <div class="stack" role="img" aria-label="成本結構">${p.costs.map((c,k)=>c.budget>0?`<span style="width:${c.budget/(p.totalCost||1)*100}%;background:var(--c${k+1})"></span>`:'').join('')}</div>
-      <div class="legend">${p.costs.map((c,k)=>`<span><i style="background:var(--c${k+1})"></i>${esc(short(c.label))} <b class="n">${pct(c.budget/(p.totalCost||1))}</b></span>`).join('')}</div>
-    </div>
-  </section>
+    </section>
 
-  <section class="card panel">
-    <div class="head"><h2>花費明細</h2><span class="hint">點類別展開細項 · 紅色＝超支</span></div>
-    <div>
+    <section class="tile glass lit ring-tile s2">
+      <span class="lbl">${ar==null?'預算售票率':'實際售票率'}</span>
+      <div class="ring">${ring(150,14,rate,rate>=p.breakevenRate?'var(--good)':'var(--bad)',p.breakevenRate)}<div class="ring-c"><b class="n">${pct(rate)}</b><span>${rate>=p.breakevenRate?'已過保本線':'未到保本線'}</span></div></div>
+      <div class="ring-leg"><span><i style="background:var(--ink)"></i>保本 ${pct(p.breakevenRate)}</span>${ar==null?'':`<span>預算 ${pct(p.budgetRate)}</span>`}</div>
+    </section>
+
+    <section class="tile glass lit s3 reveal">
+      <div class="sec-h" style="padding:0 0 12px"><h2>成本結構</h2><span class="hint n">${plain(p.totalCost)}</span></div>
+      <div class="mix">
+        <div class="mix-d">${donut(p.costs.map((c,k)=>({v:c.budget,c:`var(--c${k+1})`})),120,16)}<b class="n">7 項</b></div>
+        <div class="leg">${p.costs.map((c,k)=>`<div><i style="background:var(--c${k+1})"></i><span>${esc(short(c.label))}</span><b class="n">${pct(c.budget/tot)}</b></div>`).join('')}</div>
+      </div>
+    </section>
+
+    <section class="tile glass lit scen s3 reveal">
+      <div class="scen-row"><h2>售票率試算</h2><span class="hint">保本 ${pct(p.breakevenRate)}</span></div>
+      <div class="scen-row"><span>如果賣到 <b class="n" id="rateV"></b></span><span class="scen-big n" id="scenV"></span></div>
+      <input type="range" id="rate" min="0" max="100" value="${Math.round(p.budgetRate*100)}" aria-label="假設售票率">
+      <div class="note">損益 ＝ 售票率 × 滿座淨票房 ＋ 其他收入 − 總成本</div>
+    </section>
+
+    <section class="tile glass s6 reveal">
+      <div class="sec-h" style="padding:0 0 4px"><h2>花費明細</h2><span class="hint">點類別展開細項 · 紅＝超支</span></div>
       <div class="cols"><span></span><span>類別</span><span>預算</span><span>實際</span><span>差異</span></div>
       <div>${cats}</div>
       <div class="tot"><span></span><div class="c-name">總成本</div><div class="c-num n"><em>預算</em>${money(p.totalCost)}</div><div class="c-num n"><em>實際</em>${ac==null?'<span class="na">—</span>':money(ac)}</div><div class="c-num n"><em>差異</em>${diffCell(p.totalCost,ac,true)}</div></div>
-    </div>
-  </section>
+    </section>
 
-  <section class="card panel">
-    <h2>收入</h2>
-    <div>
+    <section class="tile glass s6 reveal">
+      <div class="sec-h" style="padding:0 0 4px"><h2>收入</h2></div>
       <div class="inc-r h"><div>項目</div><div>預算</div><div>實際</div><div>差異</div></div>
       ${inc('門票收入（已扣手續費）',p.budgetTicket,p.actual.ticket)}
       ${inc('贊助／資助',p.sponsor,p.actual.sponsor)}
       ${inc('場刊及周邊',p.merch,p.actual.merch)}
-      <div class="inc-r t"><div>最終損益</div><div class="c-num n ${tone(p.budgetPnL)}"><em>預算</em>${money(p.budgetPnL)}</div><div class="c-num n ${ap==null?'na':tone(ap)}"><em>實際</em>${ap==null?'—':money(ap)}</div><div class="c-num n"><em>差異</em>${ap==null?'<span class="na">—</span>':diffCell(p.budgetPnL,ap,false)}</div></div>
-    </div>
-    <div class="note">滿座票房 ${plain(p.fullGross)} · 手續費 ${pct(p.feePct)} · 滿座淨票房 ${plain(p.fullNet)} · 每場平均成本 ${plain(p.shows?p.totalCost/p.shows:null)}</div>
-  </section>
-
-  <section class="card panel">
-    <h2>售票率試算</h2>
-    <div class="scen"><span>如果售票率係 <b class="n" id="rateV"></b></span><span class="big n" id="scenV"></span>
-      <input type="range" id="rate" min="0" max="100" value="${Math.round(p.budgetRate*100)}" aria-label="假設售票率"></div>
-    <div class="note">損益 ＝ 售票率 × 滿座淨票房 ＋ 其他收入 − 總成本（同 Sheet「總覽」公式）· 保本線 ${pct(p.breakevenRate)}</div>
-  </section>`;
+      <div class="inc-r t"><div>最終損益</div><div class="c-num n ${tone(p.budgetPnL)}"><em>預算</em>${money(p.budgetPnL)}</div><div class="c-num n ${act?tone(ap):'na'}"><em>實際</em>${act?money(ap):'—'}</div><div class="c-num n"><em>差異</em>${act?diffCell(p.budgetPnL,ap,false):'<span class="na">—</span>'}</div></div>
+      <div class="note" style="padding:10px 8px 0">滿座票房 ${plain(p.fullGross)} · 手續費 ${pct(p.feePct)} · 滿座淨票房 ${plain(p.fullNet)} · 每場平均成本 ${plain(p.shows?p.totalCost/p.shows:null)}</div>
+    </section>
+  </div>`;
 }
 function wireDetail(p){
   document.querySelectorAll('.cat-h').forEach(b=>b.addEventListener('click',()=>{const c=b.parentElement;const o=c.classList.toggle('open');b.setAttribute('aria-expanded',o);}));
   const r=document.getElementById('rate'),rv=document.getElementById('rateV'),sv=document.getElementById('scenV'),other=p.sponsor+p.merch;
-  const upd=()=>{const v=r.value/100*p.fullNet+other-p.totalCost;rv.textContent=r.value+'%';sv.innerHTML=money(v);sv.className='big n '+tone(v);};
+  const upd=()=>{const v=r.value/100*p.fullNet+other-p.totalCost;rv.textContent=r.value+'%';sv.innerHTML=money(v);sv.className='scen-big n '+tone(v);r.style.setProperty('--p',r.value+'%');};
   r.addEventListener('input',upd);upd();
 }
 
 load();
-if('serviceWorker' in navigator&&/github\.io$/.test(location.hostname)){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 </script>
 
 </body>
