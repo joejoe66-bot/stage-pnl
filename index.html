@@ -280,6 +280,21 @@ h2,.eq-op{font-size:var(--fs-xl)}
 .p-ring small{bottom:-18px}
 @media (max-width:560px){.p-big,.eq-r .eq-v,.ring-c b,.scen-big{font-size:28px}.p-name,.eq-v{font-size:22px}}
 
+/* ---------- 對齊：類別、細項、標題、合計共用同一套欄寬和右邊界 ---------- */
+:root{--numw:150px;--padr:10px}
+@media (max-width:980px){:root{--numw:132px}}
+.cols,.cat-h,.tot{grid-template-columns:22px minmax(0,1fr) repeat(3,var(--numw));padding-left:8px;padding-right:var(--padr)}
+.items{padding:2px 0 16px 30px}
+.item{grid-template-columns:minmax(0,1fr) repeat(3,var(--numw));padding:14px var(--padr) 14px 14px}
+.c-num{white-space:nowrap}
+.cols span:nth-child(n+3){text-align:right}
+@media (max-width:620px){
+  .cols,.cat-h,.tot{grid-template-columns:22px repeat(3,minmax(0,1fr))}
+  .item{grid-template-columns:repeat(3,minmax(0,1fr));padding:12px var(--padr) 12px 14px}
+  .items{padding:2px 0 16px 30px}
+  .c-num{white-space:normal}
+}
+
 /* ---------- 動畫 ---------- */
 @media (prefers-reduced-motion:no-preference){
   /* 沒有 View Transitions 的瀏覽器：區塊依次彈入 */
