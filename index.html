@@ -295,6 +295,22 @@ h2,.eq-op{font-size:var(--fs-xl)}
   .c-num{white-space:normal}
 }
 
+/* ---------- 投資者分配 ---------- */
+.inv{display:grid;gap:10px;padding:16px;border-radius:16px;background:var(--sunk)}
+.inv-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.inv-t{font-size:var(--fs-lg);font-weight:800}
+.inv-list{display:grid;gap:4px}
+.inv-r{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(60px,1fr) auto;gap:14px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.inv-r:first-child{border-top:0}
+.inv-n span{font-size:var(--fs-md);font-weight:700}
+.inv-n small{display:block;font-size:var(--fs-sm);color:var(--muted)}
+.inv-bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.inv-bar i{display:block;height:100%;border-radius:4px;background:var(--good);transform-origin:left}
+.inv-bar i.neg-b{background:var(--bad)}
+.inv-v{font-size:var(--fs-lg);font-weight:800;text-align:right;white-space:nowrap}
+@media (prefers-reduced-motion:no-preference){.view.enter .inv-bar i{animation:wipe .9s .35s var(--ease) both}}
+@media (max-width:560px){.inv-r{grid-template-columns:minmax(0,1fr) auto}.inv-bar{grid-column:1 / -1;order:3}}
+
 /* ---------- 動畫 ---------- */
 @media (prefers-reduced-motion:no-preference){
   /* 沒有 View Transitions 的瀏覽器：區塊依次彈入 */
@@ -306,6 +322,7 @@ h2,.eq-op{font-size:var(--fs-xl)}
   @keyframes rise{from{opacity:0;transform:translateY(18px) scale(.98)}}
   .view.enter .fill{animation:grow 1s .25s var(--ease) both}
   @keyframes grow{from{transform:scaleX(0)}}
+  @keyframes wipe{from{transform:scaleX(0)}}
   /* 捲動時才浮現 */
   @supports (animation-timeline:view()){
     .reveal{animation:reveal linear both;animation-timeline:view();animation-range:entry 0% entry 35%}
@@ -379,6 +396,7 @@ const SAMPLE={title:'舞台劇損益（示範）',updated:'示範資料',plays:[
     [[it('演員 ×8',420000,null),it('編劇費',100000,null)]]),
   mk('第七幕',6,540000,.05,.7,[150000,96000,84000,48000,15000,18000,20000],80000,6000,null,null)
 ]};
+SAMPLE.plays[0].investors=[{name:'投資者 A（示範）',amount:25950,note:'佔 50%'},{name:'投資者 B（示範）',amount:15570,note:'佔 30%'},{name:'投資者 C（示範）',amount:10380,note:'佔 20%'}];
 SAMPLE.plays[0].incomeItems={
   ticket:[it('正價票',819800,790000),it('優惠票（長者／學生）',137800,152000),it('團體票',0,63000,'學校包場兩場')],
   sponsor:[it('藝術發展局資助',80000,80000),it('企業贊助',20000,20000)],
@@ -526,6 +544,20 @@ function homeHTML(P){
   </section>`;
 }
 
+/* 投資者分配：每位投資者分得多少 */
+function invHTML(list,pnl,act){
+  if(!list||!list.length)return '';
+  const sum=list.reduce((a,x)=>a+(x.amount||0),0), left=pnl-sum;
+  const max=Math.max(...list.map(x=>Math.abs(x.amount||0)),1);
+  return `<div class="inv">
+    <div class="inv-h"><span class="inv-t">投資者分配</span><span class="hint">${list.length} 位 · 已分配 <b class="n">${plain(sum)}</b>${Math.round(left)===0?' · ✓ 全數分配':` · ${act?'實際':'預算'}損益尚餘 <b class="n">${plain(left)}</b>`}</span></div>
+    <div class="inv-list">${list.map(x=>`<div class="inv-r">
+      <div class="inv-n"><span>${esc(x.name)}</span>${x.note?`<small>${esc(x.note)}</small>`:''}</div>
+      <div class="inv-bar"><i class="${x.amount<0?'neg-b':''}" style="width:${Math.abs(x.amount||0)/max*100}%"></i></div>
+      <div class="inv-v n ${tone(x.amount)}">${money(x.amount)}</div></div>`).join('')}</div>
+  </div>`;
+}
+
 /* ---------- 劇目詳細（Bento）---------- */
 function diffCell(b,a,isCost){if(a==null)return '<span class="na">—</span>';const d=a-b;const c=isCost?(d>0?'neg':d<0?'pos':''):tone(d);return `<span class="${c}">${signed(d)}</span>`;}
 function detailHTML(p,idx){
@@ -576,6 +608,7 @@ function detailHTML(p,idx){
           <div class="eq-row"><span class="eq-op">−</span><div><div class="eq-l">成本${act?'':'（預算）'}</div><div class="eq-s">${act?'預算 '+plain(p.totalCost):'七項成本合計'}</div></div><span class="eq-v n">${money(ac??p.totalCost)}</span></div>
           <div class="eq-row eq-r ${tone(pnl)}"><span class="eq-op">=</span><div><div class="eq-l">${act?'實際損益':'預算損益'}</div><div class="eq-s">${act?(dd>=0?'▲ 比預算多 ':'▼ 比預算少 ')+plain(Math.abs(dd)):'實際數字未填'}</div></div><span class="eq-v n" data-count="${pnl}">${money(pnl)}</span></div>
         </div>
+        ${invHTML(p.investors,pnl,act)}
       </div>
     </section>
 
