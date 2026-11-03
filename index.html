@@ -364,6 +364,10 @@ const SAMPLE={title:'舞台劇損益（示範）',updated:'示範資料',plays:[
     [[it('演員 ×8',420000,null),it('編劇費',100000,null)]]),
   mk('第七幕',6,540000,.05,.7,[150000,96000,84000,48000,15000,18000,20000],80000,6000,null,null)
 ]};
+SAMPLE.plays[0].incomeItems={
+  ticket:[it('正價票',819800,790000),it('優惠票（長者／學生）',137800,152000),it('團體票',0,63000,'學校包場兩場')],
+  sponsor:[it('藝術發展局資助',80000,80000),it('企業贊助',20000,20000)],
+  merch:[it('場刊',12000,15500),it('Tote bag 及明信片',8000,11000)]};
 
 /* ---------- 計算 ---------- */
 const hasActual=p=>p.actual&&(p.actual.pnl!=null||!!p.actual.ticket||p.costs.some(c=>c.actual!=null));
@@ -388,9 +392,10 @@ function donut(parts,size,stroke){
   const r=(size-stroke)/2, C=2*Math.PI*r, c=size/2, tot=parts.reduce((a,p)=>a+p.v,0)||1; let off=0;
   return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="成本結構">`+parts.map(p=>{const len=p.v/tot*C;const s=`<circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="${p.c}" stroke-width="${stroke}" stroke-dasharray="${Math.max(0,len-3)} ${C}" stroke-dashoffset="${-off}" transform="rotate(-90 ${c} ${c})"/>`;off+=len;return s;}).join('')+'</svg>';
 }
-function bar(b,a,max){
+function bar(b,a,max,isIncome){
   const bw=Math.min(100,max?b/max*100:0), aw=a==null?bw:Math.min(100,max?a/max*100:0);
-  return `<div class="track" role="img" aria-label="預算 ${plain(b)}，實際 ${a==null?'未有':plain(a)}"><div class="fill${a!=null&&a>b?' over':''}" style="width:${aw}%;${a==null?'opacity:.35;background:var(--muted)':''}"></div>${a==null?'':`<div class="mark" style="left:calc(${bw}% - 1px)"></div>`}</div>`;
+  const bad=a!=null&&(isIncome?a<b:a>b);
+  return `<div class="track" role="img" aria-label="預算 ${plain(b)}，實際 ${a==null?'未有':plain(a)}"><div class="fill${bad?' over':''}" style="width:${aw}%;${a==null?'opacity:.35;background:var(--muted)':''}"></div>${a==null?'':`<div class="mark" style="left:calc(${bw}% - 1px)"></div>`}</div>`;
 }
 
 /* ---------- 資料 ----------
@@ -517,26 +522,35 @@ function detailHTML(p,idx){
   const firstOver=p.costs.findIndex(c=>c.actual!=null&&c.actual>c.budget);
   const openK=firstOver>=0?firstOver:0, tot=p.totalCost||1;
 
-  const cats=p.costs.map((c,k)=>{
-    const items=c.items||[], sb=items.reduce((a,x)=>a+x.budget,0);
-    const mis=items.length&&Math.round(sb)!==Math.round(c.budget);
-    return `<div class="cat${k===openK?' open':''}">
-      <button class="cat-h" type="button" aria-expanded="${k===openK}">
+  // 一個可展開的類別（花費或收入共用，字體和排位完全一樣）
+  const catRow=(o)=>{
+    const items=o.items||[], sb=items.reduce((a,x)=>a+x.budget,0);
+    const mis=items.length&&Math.round(sb)!==Math.round(o.budget);
+    return `<div class="cat${o.open?' open':''}">
+      <button class="cat-h" type="button" aria-expanded="${!!o.open}">
         ${CHEV}
-        <div class="c-name"><i style="background:var(--c${k+1})"></i><span>${esc(short(c.label))}<small>${esc(c.en)}${items.length?` · ${items.length} 個細項`:''}</small></span></div>
-        <div class="c-num n"><em>預算</em>${money(c.budget)}</div>
-        <div class="c-num n"><em>實際</em>${c.actual==null?'<span class="na">—</span>':money(c.actual)}</div>
-        <div class="c-num n"><em>差異</em>${diffCell(c.budget,c.actual,true)}</div>
-        <div class="c-bar">${bar(c.budget,c.actual,maxC)}</div>
+        <div class="c-name"><i style="background:${o.color}"></i><span>${esc(o.label)}<small>${esc(o.en||'')}${items.length?`${o.en?' · ':''}${items.length} 個細項`:''}</small></span></div>
+        <div class="c-num n"><em>預算</em>${money(o.budget)}</div>
+        <div class="c-num n"><em>實際</em>${o.actual==null?'<span class="na">—</span>':money(o.actual)}</div>
+        <div class="c-num n"><em>差異</em>${diffCell(o.budget,o.actual,!o.income)}</div>
+        <div class="c-bar">${bar(o.budget,o.actual,o.max,o.income)}</div>
       </button>
       <div class="cat-b"><div><div class="items">
         ${items.length?items.map(x=>`<div class="item"><div>${esc(x.item)}${x.note?`<small>${esc(x.note)}</small>`:''}</div>
-          <div class="c-num n"><em>預算</em>${money(x.budget)}</div><div class="c-num n"><em>實際</em>${x.actual==null?'<span class="na">—</span>':money(x.actual)}</div><div class="c-num n"><em>差異</em>${diffCell(x.budget,x.actual,true)}</div></div>`).join('')
-          :'<div class="none">未有細項。在 Sheet 的「花費細項」分頁加入即可。</div>'}
-        ${mis?`<div class="mis">細項預算合計 ${plain(sb)}，跟主表 ${plain(c.budget)} 相差 ${plain(sb-c.budget)}</div>`:''}
+          <div class="c-num n"><em>預算</em>${money(x.budget)}</div><div class="c-num n"><em>實際</em>${x.actual==null?'<span class="na">—</span>':money(x.actual)}</div><div class="c-num n"><em>差異</em>${diffCell(x.budget,x.actual,!o.income)}</div></div>`).join('')
+          :'<div class="none">未有細項。在 Sheet 這齣劇的細項分頁加入即可。</div>'}
+        ${mis?`<div class="mis">細項預算合計 ${plain(sb)}，跟主表 ${plain(o.budget)} 相差 ${plain(sb-o.budget)}</div>`:''}
       </div></div></div>
-    </div>`;}).join('');
-  const inc=(l,b,a)=>`<div class="inc-r"><div>${l}</div><div class="c-num n"><em>預算</em>${money(b)}</div><div class="c-num n"><em>實際</em>${a==null?'<span class="na">—</span>':money(a)}</div><div class="c-num n"><em>差異</em>${diffCell(b,a,false)}</div></div>`;
+    </div>`;};
+  const cats=p.costs.map((c,k)=>catRow({label:short(c.label),en:c.en,color:`var(--c${k+1})`,budget:c.budget,actual:c.actual,items:c.items,max:maxC,open:k===openK})).join('');
+  const II=p.incomeItems||{};
+  const incList=[
+    {label:'門票收入',en:'已扣手續費',color:'var(--good)',budget:p.budgetTicket,actual:p.actual.ticket,items:II.ticket},
+    {label:'贊助／資助',en:'',color:'var(--c2)',budget:p.sponsor,actual:p.actual.sponsor,items:II.sponsor},
+    {label:'場刊及周邊',en:'',color:'var(--c5)',budget:p.merch,actual:p.actual.merch,items:II.merch}];
+  const maxI=Math.max(...incList.map(x=>Math.max(x.budget||0,x.actual||0)),1);
+  const incs=incList.map(x=>catRow({...x,income:true,max:maxI})).join('');
+  const incTotB=incList.reduce((a,x)=>a+(x.budget||0),0);
 
   return `<div class="bento">
     <section class="tile glass lit d-hero s4">
@@ -579,12 +593,11 @@ function detailHTML(p,idx){
     </section>
 
     <section class="tile glass s6 reveal">
-      <div class="sec-h" style="padding:0 0 4px"><h2>收入</h2></div>
-      <div class="inc-r h"><div>項目</div><div>預算</div><div>實際</div><div>差異</div></div>
-      ${inc('門票收入（已扣手續費）',p.budgetTicket,p.actual.ticket)}
-      ${inc('贊助／資助',p.sponsor,p.actual.sponsor)}
-      ${inc('場刊及周邊',p.merch,p.actual.merch)}
-      <div class="inc-r t"><div>最終損益</div><div class="c-num n ${tone(p.budgetPnL)}"><em>預算</em>${money(p.budgetPnL)}</div><div class="c-num n ${act?tone(ap):'na'}"><em>實際</em>${act?money(ap):'—'}</div><div class="c-num n"><em>差異</em>${act?diffCell(p.budgetPnL,ap,false):'<span class="na">—</span>'}</div></div>
+      <div class="sec-h" style="padding:0 0 4px"><h2>收入</h2><span class="hint">點類別展開細項 · 紅＝少於預算</span></div>
+      <div class="cols"><span></span><span>類別</span><span>預算</span><span>實際</span><span>差異</span></div>
+      <div>${incs}</div>
+      <div class="tot"><span></span><div class="c-name">收入合計</div><div class="c-num n"><em>預算</em>${money(incTotB)}</div><div class="c-num n"><em>實際</em>${act?money(incA):'<span class="na">—</span>'}</div><div class="c-num n"><em>差異</em>${act?diffCell(incTotB,incA,false):'<span class="na">—</span>'}</div></div>
+      <div class="tot" style="border-top:0;padding-top:8px"><span></span><div class="c-name">最終損益</div><div class="c-num n ${tone(p.budgetPnL)}"><em>預算</em>${money(p.budgetPnL)}</div><div class="c-num n ${act?tone(ap):'na'}"><em>實際</em>${act?money(ap):'—'}</div><div class="c-num n"><em>差異</em>${act?diffCell(p.budgetPnL,ap,false):'<span class="na">—</span>'}</div></div>
       <div class="note" style="padding:10px 8px 0">滿座票房 ${plain(p.fullGross)} · 手續費 ${pct(p.feePct)} · 滿座淨票房 ${plain(p.fullNet)} · 每場平均成本 ${plain(p.shows?p.totalCost/p.shows:null)}</div>
     </section>
   </div>`;

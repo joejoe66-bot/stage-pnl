@@ -1,5 +1,5 @@
 // 舞台劇損益 PWA：外框離線可開；數字永遠從 Apps Script 讀最新（離線時頁面用上次的資料）
-const CACHE = 'pnl-v7';
+const CACHE = 'pnl-v8';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
