@@ -30,6 +30,8 @@
   --c1:#e3a93a; --c2:#3f7df0; --c3:#16a59f; --c4:#e2587b; --c5:#8a63d6; --c6:#7685a6; --c7:#93ad2f;
   --spring:linear(0,.009,.035 2.1%,.141,.281 6.7%,.723 12.9%,.938 16.7%,1.017,1.077 20.4%,1.121,1.149 24.3%,1.159,1.163,1.161,1.154 29.9%,1.129 32.8%,1.051 39.6%,1.017 43.1%,.991,.977 51%,.974 53.8%,.975 57.1%,.997 69.8%,1.003 76.9%,1.004 83.8%,1);
   --ease:cubic-bezier(.2,.8,.2,1);
+  /* 字級：全站只用這 7 級（為長輩閱讀，最小 13px） */
+  --fs-xs:13px; --fs-sm:14px; --fs-md:16px; --fs-lg:18px; --fs-xl:20px; --fs-2xl:26px; --fs-3xl:32px;
   --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
   --f-num:"Manrope","Noto Sans TC",system-ui,sans-serif;
 }
@@ -262,6 +264,21 @@ h2{font-size:18px;font-weight:800;margin:0;letter-spacing:.01em}
 .lock .primary:active{transform:scale(.96)}
 .lock .err{color:var(--bad);font-size:13px;min-height:1em}
 .skel{height:180px;border-radius:24px}
+
+/* ---------- 統一字級 ---------- */
+body{font-size:var(--fs-md)}
+.lbl,.ttl span,.p-no,.pill,.c-name small,.c-num em,.cols,.inc-r.h,.note,.mis,.ring-c span,.p-ring small{font-size:var(--fs-xs)}
+.hint,.demo,.ibtn,.p-meta,.p-sub,.p-bar-h,.p-foot,.eq-s,.ring-leg,.mix-d b,.item small,.none,.lock .err{font-size:var(--fs-sm)}
+.ttl b,.seg button,.eq-l,.leg,.item,.item .c-num,.inc-r,.p-ring b{font-size:var(--fs-md)}
+.cat-h .c-name,.cat-h .c-num,.tot,.tot .c-num,.inc-r.t{font-size:var(--fs-lg)}
+h2,.eq-op{font-size:var(--fs-xl)}
+.p-name,.eq-v,.lock h2{font-size:var(--fs-2xl)}
+.p-big,.eq-r .eq-v,.ring-c b,.scen-big{font-size:var(--fs-3xl)}
+.d-name{font-size:clamp(30px,5vw,40px)}
+.lock input{font-size:var(--fs-xl)}
+.item,.item .c-num,.cat-h .c-name,.cat-h .c-num,.tot,.inc-r.t{font-weight:700}
+.p-ring small{bottom:-18px}
+@media (max-width:560px){.p-big,.eq-r .eq-v,.ring-c b,.scen-big{font-size:28px}.p-name,.eq-v{font-size:22px}}
 
 /* ---------- 動畫 ---------- */
 @media (prefers-reduced-motion:no-preference){
